@@ -26,7 +26,7 @@
       --modal-border:  rgba(0,0,0,0.09);
       --toggle-active: #7c6fcd;
       --hint-color:    rgba(0,0,0,0.4);
-      --ripple-color:  rgba(0,0,0,0.22); /* 常に固定のグレー（ライトモード用） */
+      --ripple-color:  rgba(0,0,0,0.22);
     }
     html.dark {
       --bg:            #16161a;
@@ -38,7 +38,7 @@
       --modal-border:  rgba(255,255,255,0.09);
       --toggle-active: #9d91e8;
       --hint-color:    rgba(255,255,255,0.3);
-      --ripple-color:  rgba(255,255,255,0.22); /* 常に固定のグレー（ダークモード用） */
+      --ripple-color:  rgba(255,255,255,0.22);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -78,7 +78,6 @@
     @keyframes breathe { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
     #gaugeArc.breathing { animation: breathe 3s ease-in-out infinite; }
 
-    /* 波紋アニメーション */
     #ripple {
       transform-origin: 50% 50%; 
       opacity: 0; 
@@ -221,7 +220,6 @@
         <rect x="114" y="98" width="6" height="24" rx="2" fill="currentColor"/>
       </g>
 
-      <!-- SVGの最後尾（最前面）に配置し、ゲージやアイコンの上に表示させる -->
       <circle id="ripple" cx="110" cy="110" r="90" fill="none" />
     </svg>
     <div id="timeText" aria-live="polite"><span id="timeDisplay">25:00</span></div>
@@ -231,7 +229,7 @@
 
   <div id="settingsModal" role="dialog" aria-modal="true" aria-label="タイマー設定">
     <div id="modalBox">
-      <!-- (中略... 設定モーダルの内容はそのままです) -->
+     
       <div class="modal-head">
         <h2 class="modal-title">タイマー設定</h2>
         <button id="closeModalBtn" aria-label="閉じる">
@@ -492,7 +490,6 @@
     }
   }
 
-  /* 波紋を発生させる（単一のアニメーションを確実に再トリガー） */
   function triggerRipple() {
     rippleEl.classList.remove('play'); 
     // SVG要素のリフローには getBoundingClientRect() を使用する
@@ -500,7 +497,6 @@
     rippleEl.classList.add('play');
   }
 
-  /* タイマー終了時のアラームと波紋（音の出だしと波紋を完全に同期） */
   function playAlarmAndRipple(isWorkEnd) {
     const count = S.alarmCount;
     const dur = 2.0;          // 音の長さ
@@ -508,7 +504,6 @@
     const cycleTime = dur + interval; // 1回あたりの合計サイクル(2.4秒)
 
     if (!S.alarmOn) {
-      // 音声オフの場合は波紋だけループ
       for (let i = 0; i < count; i++) {
         setTimeout(() => triggerRipple(), i * cycleTime * 1000);
       }
@@ -523,17 +518,14 @@
       
       for (let i = 0; i < count; i++) {
         const startTime = now + i * cycleTime;
-        // AudioContextの現在時刻(currentTime)と再生予定時刻の差分から正確な遅延を計算
         const delayMs = (startTime - ctx.currentTime) * 1000;
         
-        // 音が鳴り始める瞬間に合わせて波紋をスケジュール
         setTimeout(() => triggerRipple(), Math.max(0, delayMs));
         triggerSound(ctx, type, root, dur, startTime);
       }
     } catch (e) { console.warn('音声再生失敗:', e); }
   }
 
-  /* テスト再生時のロジック（波紋は出さない・音程を固定） */
   testPlayBtn.addEventListener('click', () => {
     try {
       const ctx = ensureAudio();
@@ -541,7 +533,6 @@
       const dur = 2.0; 
       const type = testAlarmSelect.value;
       
-      // テスト再生時の音程を本番のアラーム音(作業用)の周波数に統一
       const root = 370; 
       
       triggerSound(ctx, type, root, dur, now);
